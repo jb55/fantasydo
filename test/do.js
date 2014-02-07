@@ -26,19 +26,19 @@ suite('single-call chain', function(){
         assert.equal(testm.of(1).chain(function(n){return testm.of(n + 2)}).val, 3);
     });
     test('do notation should work', function(){
-        assert.equal(Do(function*(){
-            var a = yield testm.of(7);
-            var b = yield testm.of(a + 9);
+        assert.equal(Do(function*(m){
+            var a = yield m.of(7);
+            var b = yield m.of(a + 9);
             return b;
         }, testm).val, 16);
     });
     test('do notation should not continue pass fail', function(){
         var c = 0;
-        assert.equal(Do(function*(){
-            var a = yield testm.of(7);
-            var q = yield testm.none();
+        assert.equal(Do(function*(m){
+            var a = yield m.of(7);
+            var q = yield m.none();
             c = 18;
-            var b = yield testm.of(a + 9);
+            var b = yield m.of(a + 9);
             return b;
         }, testm).val, null);
         assert.equal(c, 0);

@@ -35,16 +35,16 @@ Here's a very simple `Maybe` monad:
 
 Now, we can write a function that depends on multiple maybe values, and will only complete if all of them are not `none`:
 
-	Do(function*(){
-	    var a = yield Maybe.of(7);
-	    var b = yield Maybe.of(a + 9);
+	Do(function*(m){
+	    var a = yield m.of(7);
+	    var b = yield m.of(a + 9);
 	    return b;
 	 }, Maybe).val; // => 16
 
     Do(function*(){
-        var a = yield Maybe.of(7);
-        var q = yield Maybe.none();
-        var b = yield Maybe.of(a + 9);
+        var a = yield m.of(7);
+        var q = yield m.none();
+        var b = yield m.of(a + 9);
         return b;
     }, Maybe).val;  // => null
 
