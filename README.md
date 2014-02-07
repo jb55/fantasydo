@@ -20,60 +20,68 @@ First, you'll need a monad.  See the [Fantasy Land Implementation List](https://
 
 Here's a very simple `Maybe` monad:
 
-    var Maybe = {}
+```js
+var Maybe = {}
 
-    Maybe.chain = function(f) {
-      if(this.val !== null)
-          return f(this.val);
-      return this;
-    };
+Maybe.chain = function(f) {
+  if(this.val !== null)
+      return f(this.val);
+  return this;
+};
 
-    Maybe.of = function(t) {
-      return {"val" : t, "chain" : Maybe.chain};
-    };
+Maybe.of = function(t) {
+  return {"val" : t, "chain" : Maybe.chain};
+};
 
-    Maybe.none = function() {
-      return {"val" : null, "chain" : Maybe.chain};
-    };
+Maybe.none = function() {
+  return {"val" : null, "chain" : Maybe.chain};
+};
+```
 
 Now, we can write a function that depends on multiple maybe values, and will only complete if all of them are not `none`:
 
-    Do(function*(m){
-      var a = yield m.of(7);
-      var b = yield m.of(a + 9);
-      return b;
-    }, Maybe).val; // => 16
+```js
+Do(function*(m){
+  var a = yield m.of(7);
+  var b = yield m.of(a + 9);
+  return b;
+}, Maybe).val; // => 16
 
-    Do(function*(){
-      var a = yield m.of(7);
-      var q = yield Maybe.none();
-      var b = yield m.of(a + 9);
-      return b;
-    }, Maybe).val;  // => null
+Do(function*(){
+  var a = yield m.of(7);
+  var q = yield Maybe.none();
+  var b = yield m.of(a + 9);
+  return b;
+}, Maybe).val;  // => null
+```
 
 ### Multi-mode
 
 Fantasy Do also supports monads that may call their `chain` parameter multiple times, like the non-determinism context (aka the list monad).  Without the ability to copy generator state, this works by re-runninng the generator from the beginning for each branch.  This may behave strangely if your bind argument has significant side-effects.
 
-    Array.prototype.chain = function(f) {
-      let next = [];
-      let len = this.length;
-      this.forEach(function(it){
-          let v = f(it);
-          v.forEach(function(it){next.push(it)});
-      });
-      return next;
-    };
+```js
+Array.prototype.chain = function(f) {
+  let next = [];
+  let len = this.length;
+  this.forEach(function(it){
+      let v = f(it);
+      v.forEach(function(it){next.push(it)});
+  });
+  return next;
+};
 
-    Array.prototype.of = function(t) {return [t];}
+Array.prototype.of = function(t) {return [t];}
+```
 
 then,
 
-    Do.Multi(function*(){
-        let c = yield [1, 2];
-        let d = yield [c + 1, c + 2];
-        return d;
-    }, Array.prototype); // => [2, 3, 3, 4]
+```js
+Do.Multi(function*(){
+    let c = yield [1, 2];
+    let d = yield [c + 1, c + 2];
+    return d;
+}, Array.prototype); // => [2, 3, 3, 4]
+```
 
 ## License
 
