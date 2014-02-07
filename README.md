@@ -19,33 +19,36 @@ If your monad only calls the argument to the `chain` function once ('non-branchi
 First, you'll need a monad.  See the [Fantasy Land Implementation List](https://github.com/fantasyland/fantasy-land/blob/master/implementations.md) to find some monads that may work for you.
 
 Here's a very simple `Maybe` monad:
-	
-	var Maybe = {}
-	Maybe.chain = function(f) {
-	    if(this.val !== null)
-	        return f(this.val);
-	    return this;
-	};
-	Maybe.of = function(t) {
-	    return {"val" : t, "chain" : Maybe.chain};
-	};
-	Maybe.none = function() {
-	    return {"val" : null, "chain" : Maybe.chain};
-	};
+
+    var Maybe = {}
+
+    Maybe.chain = function(f) {
+      if(this.val !== null)
+          return f(this.val);
+      return this;
+    };
+
+    Maybe.of = function(t) {
+      return {"val" : t, "chain" : Maybe.chain};
+    };
+
+    Maybe.none = function() {
+      return {"val" : null, "chain" : Maybe.chain};
+    };
 
 Now, we can write a function that depends on multiple maybe values, and will only complete if all of them are not `none`:
 
-	Do(function*(m){
-	    var a = yield m.of(7);
-	    var b = yield m.of(a + 9);
-	    return b;
-	 }, Maybe).val; // => 16
+    Do(function*(m){
+      var a = yield m.of(7);
+      var b = yield m.of(a + 9);
+      return b;
+    }, Maybe).val; // => 16
 
     Do(function*(){
-        var a = yield m.of(7);
-        var q = yield m.none();
-        var b = yield m.of(a + 9);
-        return b;
+      var a = yield m.of(7);
+      var q = yield Maybe.none();
+      var b = yield m.of(a + 9);
+      return b;
     }, Maybe).val;  // => null
 
 ### Multi-mode
@@ -61,7 +64,8 @@ Fantasy Do also supports monads that may call their `chain` parameter multiple t
       });
       return next;
     };
-	Array.prototype.of = function(t) {return [t];}
+
+    Array.prototype.of = function(t) {return [t];}
 
 then,
 
